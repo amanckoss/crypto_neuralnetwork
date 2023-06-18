@@ -28,7 +28,7 @@ def close_order(price, operation):
         cur.execute(
             f"SELECT amount FROM exchange_service.order_books where stock_id = {1} and operation = 'buy' and price = {price} order by price LIMIT 1")
         amount = cur.fetchall()[0][0]
-        print(amount)
+        print("amount: ", amount)
         if amount == 1:
             cur.execute(
                 f"DELETE FROM exchange_service.order_books where stock_id = {1} and price = {price} and amount = 1 and operation = '{operation}'")
@@ -37,5 +37,7 @@ def close_order(price, operation):
                 f"Update exchange_service.order_books SET amount = {amount - 1} where stock_id = 1 and price = {price} and operation = '{operation}'")
         cur.fetchall()
         con.commit()
+    except Exception as e:
+        pass
     finally:
         cur.close()
