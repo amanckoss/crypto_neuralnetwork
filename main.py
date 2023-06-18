@@ -10,7 +10,7 @@ con = pymysql.connect(host='192.168.31.229', user='BigCat',
 def getCrypto():
     cur = con.cursor()
     array = []
-    cur.execute(f"SELECT price, amount FROM exchange_service.order_books where stock_id = {1}")
+    cur.execute(f"SELECT price, amount FROM exchange_service.order_books where stock_id = {1} order by price")
     fetch = cur.fetchall()
     for order in fetch:
         print(order)
