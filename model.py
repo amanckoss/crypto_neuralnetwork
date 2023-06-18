@@ -4,13 +4,7 @@ import tensorflow as tf
 import numpy as np
 import time
 
-from main import getCrypto
-
-# def getCrypto():
-#     random_numbers = []
-#     for _ in range(50):
-#         random_numbers.append(random.randint(1, 10))  # Adjust the range as per your requirements
-#     return random_numbers
+from db_api import get_orders
 
 
 def fitness_function(outputs: list, inputs: list, param=0.9):
@@ -57,7 +51,7 @@ def model_work():
     model = mutation(prev_model)
 
     while True:
-        input = getCrypto()
+        input = get_orders()
 
         outputs = model.predict(np.expand_dims(input, axis=0))[0]
         fitness, count_promotion = fitness_function(outputs, input)
