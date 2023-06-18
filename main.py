@@ -10,28 +10,34 @@ con = pymysql.connect(host='192.168.31.229', user='BigCat',
 def getCrypto():
     cur = con.cursor()
     array = []
-    cur.execute(f"SELECT price, amount FROM exchange_service.order_books where stock_id = {1} order by price")
-    fetch = cur.fetchall()
-    for order in fetch:
-        print(order)
-        i = 0
-        while i < order[1]:
-            array.append(str(order[0]))
-            i += 1
-            if len(array) == 100:
-                print('work')
-                print(array)
-                return array
+    try:
+        cur.execute(f"SELECT price, amount FROM exchange_service.order_books where stock_id = {1} and operation = 'buy' order by price")
+        fetch = cur.fetchall()
+        for order in fetch:
+            i = 0
+            while i < order[1]:
+                array.append(str(order[0]))
+                i += 1
+                if len(array) == 100:
+                    return array
+    finally:
+        cur.close()
 
-def closeCorder(price):
+def closeOrder(price):
     cur = con.cursor()
-    cur.execute(f"SELECT price, amount FROM exchange_service.order_books where id = {id} and stock_id = {1}")
+    try:
+        cur.execute(f"SELECT amount FROM exchange_service.order_books where stock_id = {1} and operation = 'buy' and price = {price} order by price LIMIT 1")
+        amount = cur.fetchall()[0][0]
+        print(amount)
+        if amount == 1:
+            cur.execute(f"DELETE FROM exchange_service.order_books where stock_id = {1} and price = {price} and amount = 1")
+        else:
+            cur.execute(f"Update exchange_service.order_books SET amount = {amount - 1} where stock_id = 1 and price = {price}")
+        cur.fetchall()
+        con.commit()
+    finally:
+        cur.close()
 
 with con:
     getCrypto()
-
-# multiplier = Decimal(random.uniform(0.95, 1.05))
-# new_price = fetch * multiplier
-# cur.execute(f"UPDATE order_books SET price = {new_price} WHERE id = {id}")
-# cur.execute(f"SELECT price FROM exchange_service.order_books where id = {id}")
-# fetch = cur.fetchall()[0][0]
+    closeOrder(363.61)
