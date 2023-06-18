@@ -7,27 +7,29 @@ import time
 from db_api import get_orders
 
 
-def fitness_function(outputs: list, inputs: list, param=0.9):
+def fitness_function(outputs, inputs, param=0.9):
     res = 0
     count = 0
-    for o, i in zip(outputs, inputs):
-        if o > param:
+
+    for i in range(len(outputs)):
+        if outputs[i] > param:
             count += 1
-            res += i
+            res += inputs[i]
     return res, count
 
 
 def generate_model() -> tf.keras.Sequential:
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(50, activation='relu'),
-        tf.keras.layers.Dense(50, activation='relu'),
-        tf.keras.layers.Dense(50, activation='sigmoid')
+        tf.keras.layers.Dense(5, input_shape=(5,), activation='relu'),
+        tf.keras.layers.Dense(5, activation='sigmoid')
     ])
-    model.build((None, 50))
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    # model.build((None, 50))
     return model
 
 
 def mutation(model, mutation_rate=0.1):
+    return generate_model()
     new_model = tf.keras.models.clone_model(model)
     new_model.set_weights(model.get_weights())
 
@@ -51,21 +53,28 @@ def model_work():
     model = mutation(prev_model)
 
     while True:
-        input = get_orders()
+        input = get_orders()[:5]
 
-        outputs = model.predict(np.expand_dims(input, axis=0))[0]
-        fitness, count_promotion = fitness_function(outputs, input)
+        float_input = [float(element) for element in input]
 
-        print(fitness, " ", count_promotion)
+        outputs = model.predict([float_input])[0]
+
+        fitness, count_promotion = fitness_function(outputs, float_input)
+
+        print("test fitness", fitness)
+        print("max fitness", prev_fitness)
 
         # buy_promotion(count_promotion)
 
         if fitness > prev_fitness:
             prev_model = model
+            prev_fitness = fitness
 
         model = mutation(prev_model)
-        prev_fitness = fitness
 
-        time.sleep(6)
+
+        time.sleep(1)
 
 model_work()
+# m = generate_model()
+# mutate_model(m, 0.1)
