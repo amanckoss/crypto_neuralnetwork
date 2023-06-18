@@ -4,12 +4,12 @@ con = pymysql.connect(host='192.168.31.229', user='BigCat',
                       password='0000', database='exchange_service')
 
 
-def get_orders():
+def get_orders(operation):
     cur = con.cursor()
     array = []
     try:
         cur.execute(
-            f"SELECT price, amount FROM exchange_service.order_books where stock_id = {1} and operation = 'buy' order by price")
+            f"SELECT price, amount FROM exchange_service.order_books where stock_id = {1} and operation = '{operation}' order by price")
         fetch = cur.fetchall()
         for order in fetch:
             i = 0
@@ -22,7 +22,7 @@ def get_orders():
         cur.close()
 
 
-def close_order(price):
+def close_order(price, operation):
     cur = con.cursor()
     try:
         cur.execute(
@@ -31,10 +31,10 @@ def close_order(price):
         print(amount)
         if amount == 1:
             cur.execute(
-                f"DELETE FROM exchange_service.order_books where stock_id = {1} and price = {price} and amount = 1")
+                f"DELETE FROM exchange_service.order_books where stock_id = {1} and price = {price} and amount = 1 and operation = '{operation}'")
         else:
             cur.execute(
-                f"Update exchange_service.order_books SET amount = {amount - 1} where stock_id = 1 and price = {price}")
+                f"Update exchange_service.order_books SET amount = {amount - 1} where stock_id = 1 and price = {price} and operation = '{operation}'")
         cur.fetchall()
         con.commit()
     finally:
