@@ -85,6 +85,6 @@ def model_work():
 
         time.sleep(3)
 
-model_work()
+
 # m = generate_model()
 # mutate_model(m, 0.1)
