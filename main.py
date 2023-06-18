@@ -10,15 +10,22 @@ con = pymysql.connect(host='192.168.31.229', user='BigCat',
 def getCrypto():
     cur = con.cursor()
     array = []
-    for id in range(1, 10):
-        cur.execute(f"SELECT price, amount FROM exchange_service.order_books where id = {id} and stock_id = {1}")
-        fetch = cur.fetchall()[0]
+    cur.execute(f"SELECT price, amount FROM exchange_service.order_books where stock_id = {1}")
+    fetch = cur.fetchall()
+    for order in fetch:
+        print(order)
         i = 0
-        while i < fetch[1]:
-            array.append(str(fetch[0]))
+        while i < order[1]:
+            array.append(str(order[0]))
             i += 1
-    print(array)
-    return array
+            if len(array) == 100:
+                print('work')
+                print(array)
+                return array
+
+def closeCorder(price):
+    cur = con.cursor()
+    cur.execute(f"SELECT price, amount FROM exchange_service.order_books where id = {id} and stock_id = {1}")
 
 with con:
     getCrypto()
