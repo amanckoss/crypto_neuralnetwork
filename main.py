@@ -7,7 +7,7 @@ import pymysql
 con = pymysql.connect(host='192.168.31.229', user='BigCat',
                       password='0000', database='exchange_service')
 
-def getStock():
+def getCrypto():
     cur = con.cursor()
     array = []
     for id in range(1, 10):
@@ -21,7 +21,7 @@ def getStock():
     return array
 
 with con:
-    getStock()
+    getCrypto()
 
 # multiplier = Decimal(random.uniform(0.95, 1.05))
 # new_price = fetch * multiplier
