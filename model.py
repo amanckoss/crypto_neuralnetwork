@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 import time
 
-from db_api import get_orders, close_order
+from db_api import get_orders, close_order, change_crypto_type_course
 
 
 def fitness_function(outputs, float_input_buy, float_input_sell, param=0.9):
@@ -82,8 +82,14 @@ def model_work():
 
         model = mutation(prev_model)
 
-
-        time.sleep(3)
+        for i in range(1, 10):
+            print(i)
+            change_crypto_type_course(i)
+        time.sleep(5)
+        for i in range(1, 10):
+            print(i)
+            change_crypto_type_course(i)
+        time.sleep(5)
 
 
 # m = generate_model()

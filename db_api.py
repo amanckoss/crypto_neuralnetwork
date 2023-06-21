@@ -1,7 +1,33 @@
+import decimal
+import random
 import pymysql
 
 con = pymysql.connect(host='192.168.31.229', user='BigCat',
                       password='0000', database='exchange_service')
+
+
+def change_crypto_type_course(crypto_type):
+    rand_num = decimal.Decimal(random.uniform(-0.03, 0.03))
+    print('buy')
+    change_market_course(crypto_type, 'buy', rand_num)
+    print('sell')
+    change_market_course(crypto_type, 'sell', rand_num)
+    con.commit()
+
+
+def change_market_course(crypto_type, operation, rand_numb):
+    cur = con.cursor()
+    cur.execute(f"SELECT id, price FROM exchange_service.order_books where stock_id = {crypto_type} and operation = '{operation}'")
+    crypto = cur.fetchall()
+    print(crypto)
+    for cr in crypto:
+        new_price = cr[1] + cr[1] * rand_numb
+        cur.execute(
+            f"Update exchange_service.order_books SET price = {new_price} where id ={cr[0]}")
+    cur.fetchall()
+    cur.execute(f"SELECT id, price FROM exchange_service.order_books where stock_id = {crypto_type}")
+    new_crypto = cur.fetchall()
+    print(new_crypto)
 
 
 def get_orders(operation):
